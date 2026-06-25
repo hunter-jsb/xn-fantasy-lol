@@ -6,8 +6,12 @@ from requests import get
 main_slugs = {'LCS': 'league-of-legends-lcs', 'LEC': 'league-of-legends-lec'}
 LEC_ID = 4197
 LCS_START = datetime(2021, 2, 5)
-with open(f'./secrets.json', 'r') as f:
-    PANDASCORE_TOKEN = json.load(f)['PANDASCORE_TOKEN']
+
+
+def _pandascore_token():
+    """Load the PandaScore API token lazily so the module imports without secrets."""
+    with open('./secrets.json', 'r') as f:
+        return json.load(f)['PANDASCORE_TOKEN']
 
 # GET NA WEEK - DECLARE END OF WEEKS AS wX_e
 now = datetime.now()
@@ -23,6 +27,8 @@ elif now <= w5_e:
     lcs_week = 'Week 5'
 elif now <= w6_e:
     lcs_week = 'Week 6'
+else:
+    lcs_week = 'Week 6'  # Spring 2021 split ended 2021-03-15; default to the final week so imports never break
 
 
 class LoLSeries:
@@ -102,7 +108,7 @@ class LCS(LoLSeries):
 
     @staticmethod
     def download_past_lcs():
-        resp = get(f'https://api.pandascore.co/lol/matches/past?token={PANDASCORE_TOKEN}'
+        resp = get(f'https://api.pandascore.co/lol/matches/past?token={_pandascore_token()}'
                    f'&filter[league_id]={LCS.ID}').json()
         with open(f'./assets/past_LCS.json', 'w') as f1:
             json.dump(resp, f1, indent=4)

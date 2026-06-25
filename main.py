@@ -6,7 +6,10 @@ from datetime import datetime
 
 with open('./secrets.json') as s:
     BOT_TOKEN = json.load(s)['BOT_TOKEN']
-bot = commands.Bot(command_prefix='$')
+
+intents = discord.Intents.default()
+intents.message_content = True  # required for reading prefix commands on discord.py 2.x
+bot = commands.Bot(command_prefix='$', intents=intents)
 
 
 @bot.command()
@@ -97,7 +100,7 @@ async def record(ctx):
 
     # CONSTRUCT EMBED FOR EACH WEEK
     pasta = discord.Embed()
-    pasta.set_thumbnail(url=ctx.author.avatar_url)
+    pasta.set_thumbnail(url=ctx.author.display_avatar.url)
     total_correct = 0  # counter variable
     for oc_week in user_record:  # ocs = outcomes
         ocs = user_record[oc_week]
@@ -117,7 +120,7 @@ async def record(ctx):
 
         # CLEAR THE EMBED & COUNTER
         pasta = discord.Embed()
-        pasta.set_thumbnail(url=ctx.author.avatar_url)
+        pasta.set_thumbnail(url=ctx.author.display_avatar.url)
         total_correct = 0
 
 
